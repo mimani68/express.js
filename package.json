@@ -1,0 +1,73 @@
+{
+  "name": "sample",
+  "version": "1.0.7",
+  "description": "pure express.js startup automation",
+  "main": "./server/sample.server.js",
+  "keywords": [
+    "sample"
+  ],
+  "author": {
+    "name": "Mahdi Imani",
+    "email": "imani.mahdi@gmail.com",
+    "url": "https://www.linkedin.com/in/mehdi-imani-5220b894/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mimani68"
+  },
+  "release": {
+    "debug": false
+  },
+  "scripts": {
+    "start": "node server/bin/www",
+    "start:direct": "node server/sample.server.js",
+    "start:pm2": "pm2 start sample.server",
+    "start:pm2-monit": "pm2 monit",
+    "start:nodemon": "nodemon server/sample.server.js",
+    "start:webpack-mode": "webpack && node server/dist/app.bundle.js",
+    "start:webpack-dev-server": "webpack-dev-server",
+    "start:webpack-cli": "webpack ./server/sample.server.js --output=./dist/server/bundle.js --mode=production && node ./dist/server/bundle.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "chalk": "^2.3.2",
+    "cors": "^2.8.4",
+    "csurf": "^1.9.0",
+    "dotenv": "^4.0.0",
+    "exec": "^0.2.1",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "helmet": "^3.12.0",
+    "jsonwebtoken": "^8.2.1",
+    "local-web-server": "^2.5.1",
+    "lodash": "^4.17.5",
+    "moment-jalaali": "^0.7.2",
+    "mongodb": "^3.0.6",
+    "mongoose": "^5.0.14",
+    "morgan": "^1.9.0",
+    "nodemon": "^1.17.3",
+    "path": "^0.12.7",
+    "pm2": "^2.10.2",
+    "redis": "^2.8.0",
+    "response-time": "^2.3.2",
+    "sequelize": "^4.37.5",
+    "serve-favicon": "^2.5.0",
+    "stream": "0.0.2",
+    "swagger-ui-express": "^3.0.8",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-preset-es2015": "^6.24.1",
+    "css-loader": "^0.28.11",
+    "file-loader": "^1.1.11",
+    "node-sass": "^4.7.2",
+    "sass-loader": "^6.0.7",
+    "scss-loader": "0.0.1",
+    "style-loader": "^0.20.3",
+    "ts-loader": "^4.2.0",
+    "typescript": "^2.7.2"
+  },
+  "license": "ISC"
+}

@@ -1,0 +1,191 @@
+/**
+ * 
+ *
+  *
+ * 
+ * @version {1.0.0} - 2017/09/07 18:15
+ * @version {1.0.1} - 2017/09/11 22:16
+ * 
+ * 
+ */
+
+'use strict';
+
+// ===| 01 |=====| Main Requirment |=============================
+var express     = require('express');
+// var router      = express.Router();
+var path        = require('path');
+const chalk     = require('chalk');
+
+
+
+// ===| 02 |=====| MiddleWares |=================================
+/**
+ * 
+ * 
+ * no modules
+ * 
+ * 
+ */
+
+
+
+
+// ===| 03 |=====| Configurations |==============================
+/**
+ * 
+ * @description SERVER configuration
+ * 
+ */
+var config       = require('../config/server.config');
+var database_url = config.setConfig.database_url();
+
+
+
+
+// ===| 04 |=====| AUTHENTICATION |==============================
+/**
+ * 
+ * 01
+ * 
+ * @description AUTHENTICATION
+ * 
+ */
+var auth = require('../modules/authentication.controller');
+
+
+
+/**
+ * 
+ * 03
+ * TOTAL ACCESS AUTHENTICATION
+ * 
+ * @description check user info for all modules
+ * 
+ */
+// === Method 01 ========
+// router.use(auth.verification);
+
+// === Method 01 ========
+// router.use('/protected', verifyToken, require('./protected'));
+
+
+/**
+ * 
+ * 04
+ * access policy object
+ * 
+ * @description page access with this element
+ * 
+ */
+var permission = require('../config/permission.routing');
+
+
+
+
+
+
+// ===| 05 |=====| Business |===================================
+// ===| API Center |============================================
+/**
+ * 
+ * 01
+ * Main Page
+ * 
+ * @description : main page router
+ * 
+ */
+router
+    .get('/',
+        (req, res ,next)=>{
+            auth.access.getMethodSecureRout(req, res ,next, permission.router_object.index_app.main);
+        },
+        (req, res) => {
+            if ( auth.access.this_page_access == true ){
+                res.json({
+                    message: 'welcome to api center',
+                    user: req.token
+                });
+            } else {
+                res.json({
+                    message: 'you dont have permission for this page',
+                });
+            }
+            console.log(chalk.red(' √ ') + chalk.blue('index.app.controller') + ' is running');            
+        });
+
+
+/**
+ * 
+ * 02
+ * USER
+ * 
+ * @description : 
+ * 
+ */
+router
+    .use('/user',
+        (req, res ,next)=>{
+            auth.access.useMethodSecureRout(req, res ,next, permission.router_object.index_app.user);
+        },
+        require('./user.app.controller')
+    );
+
+
+
+/**
+ * 
+ * 04
+ * @description : ECU API
+ * 
+ */
+router
+    .use('/ecu',
+        (req, res ,next)=>{
+            auth.access.useMethodSecureRout(req, res ,next, permission.router_object.index_app.ecu);
+        },
+        // require('./ecu.app.controller'),
+        (req, res)=>{
+            res.json({
+                title: 'ecu api center'
+            })
+        });
+
+
+
+
+
+/**
+ * 
+ * 
+ * @description : API sample
+ * 
+ */
+router.get('/sample', (req, res) => {
+    console.log(chalk.red(' √ ') + chalk.blue('mongo.db.query') + chalk.yellow(' [API Center] ') + 'api center running ' );
+    res.json({
+        id: Math.floor(Math.random() * 100),
+        title: 'hello'
+    });
+});
+
+
+// ====| ERROR |========================================
+/**
+ * 
+ * ERRORR
+ * @description : 404
+ * 
+ */
+router.get('/error/404', (req, res, next)=>{
+    res.json({
+        status: 404,
+        message: 'not found'
+    });
+});
+
+
+// ======================================================
+// ====|>   export center   <|===========================
+// ======================================================
+module.exports = router;

@@ -1,0 +1,48 @@
+# ======================
+#   Usage
+# ======================
+# docker-compose build
+# docker-compose up -d
+# ======================
+
+
+# Set the base image to mongo
+FROM    node:latest
+
+# File Author / Maintainer
+MAINTAINER Mahdi Imani <mahdi.imani@gmail.com>
+
+# Define working directory
+WORKDIR /server
+
+# Install curl, git, nodejs and npm
+RUN apt-get update && apt-get install -y \
+    git \
+    curl
+
+RUN curl -sL https://deb.nodesource.com/setup_0.12 | bash -
+
+RUN apt-get update && apt-get install -y nodejs
+
+# Bundle app source
+COPY . /src
+
+# Clone nodejs-microservice-poc from Github (the rest api)
+# RUN git clone https://gitlab.com/mimani68/sample.git
+
+# Navigate to the nodejs-microservice-poc folder
+WORKDIR /server
+
+
+# Install app dependencies
+# RUN cd /src; npm install
+
+# Install NPM dependencies
+RUN npm install
+
+# Expose port 3000 for nodejs-microservice-poc
+EXPOSE  8080
+
+# Start the application in nodejs
+CMD npm start
+# CMD ["node", "/src/index.js"]

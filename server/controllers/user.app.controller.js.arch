@@ -1,0 +1,324 @@
+/**
+ * 
+ *
+  *
+ * 
+ * @version {1.0.0} - 2017/09/07 18:15
+ * @version {1.0.1} - 2017/09/12 21:45
+ * @version {1.0.2} - 2017/09/13 10:35
+ * 
+ * 
+ */
+
+// ===| 01 |=====| Main Requirment |=============================
+// core
+const express   = require('express');
+var bodyParser  = require('body-parser');
+const router    = express.Router();
+
+// third-party library
+const chalk     = require('chalk');
+var _           = require('lodash');
+
+// database
+var MongoClient = require('mongodb').MongoClient;
+
+
+
+
+
+// ===| 02 |=====| Configurations |==============================
+/**
+ * 
+ * @description SERVER configuration
+ * 
+ */
+var config       = require('../config/server.config');
+var database_url = config.setConfig.database_url();
+
+
+
+
+
+// ===| 03 |=====| MiddleWares |=================================
+/**
+ * 
+ * 01
+ * @description mongo customized driver
+ * 
+ * 
+ */
+var mongo_data_base = require('../models/data_extentions/sample.mongod.orm');
+// ../data_base/mongo.db.module
+
+/**
+ * 
+ * 02
+ * @description systemic utility
+ * 
+ * 
+ */
+var utility = require('../modules/utility.module');
+
+
+
+/**
+ * 
+ * 03
+ * parse all 'req.body' to JSON format
+ * 
+ * @example - req.body.name => 'mahdi'
+ * @example - req.body._id  => 'e88h3ufkfjuye04x3'
+ * 
+ */
+router.use(bodyParser.json());
+
+
+
+
+// ===| 04 |=====| AUTHENTICATION |==============================
+/**
+ * 
+ * 01
+ * 
+ * @description AUTHENTICATION
+ * 
+ */
+var auth = require('../modules/authentication.controller');
+
+
+/**
+ * 
+ * 02
+ * TOTAL ACCESS AUTHENTICATION
+ * 
+ * @description check user info for all modules
+ * 
+ */
+// === Method 01 ========
+// router.use(auth.verification);
+
+// === Method 01 ========
+// router.use('/protected', verifyToken, require('./protected'));
+
+
+/**
+ * 
+ * 03
+ * access policy object
+ * 
+ * @description page access with this element
+ * 
+ */
+var permission = require('../config/permission.routing');
+
+
+
+
+
+// ===| 04 |=====| Business |===================================
+
+/**
+ * 
+ * variable for store data and share
+ * 
+ */
+var database_respond = [];
+
+
+/**
+ *
+ * 01
+ * 
+ * @description : main page
+ * @argument {object} req
+ * @argument {object} res
+ *
+ */
+router
+    .get('/',
+        (req, res ,next)=>{
+            auth.access.getMethodSecureRout(req, res ,next, permission.router_object.user_api.main);
+        },
+        (req, res) => {
+            if ( auth.access.this_page_access == true ){
+                res.json({
+                    title: 'welcome to user page api'
+                });
+                console.log(chalk.bgRed(' api ') + " " + chalk.bgYellow.black(' user ') + ' main user page');
+            } else {
+                res.json({
+                    message: 'you dont have permission for this page',
+                });
+            }
+        });
+
+
+
+
+/**
+ * 
+ * 02
+ * 
+ * @description : show all users
+ * 
+ * @argument {object} req
+ * @argument {object} res
+ * @argument {object} next
+ *
+ */
+router
+    .get('/getAllUsers',
+        (req, res ,next)=>{
+            auth.access.getMethodSecureRout(req, res ,next, permission.router_object.user_api.getAllUsers);
+        },
+        (req, res, next) => {
+            if ( auth.access.this_page_access == true ) {
+                mongo_data_base.CRUD.showAllDoc('user', database_respond, next);
+            } else {
+                res.json({
+                    message: 'you dont have permission for this page',
+                });
+            }
+        }, (req, res, next) => {
+            database_respond = _.flatten(database_respond);
+            next();
+        }, (req, res) => {
+            res.json(database_respond);
+            console.log(chalk.bgRed(' api ') + " " + chalk.bgYellow.black(' user ') + ' show all user');
+        });
+
+
+
+/**
+ * 
+ * 03
+ * 
+ * @description : show all users
+ * 
+ * @argument {object} req
+ * @argument {object} res
+ * @argument {object} next
+ *
+ */
+router
+    .get('/show_me',
+        (req, res ,next)=>{
+            auth.access.getMethodSecureRout(req, res ,next, permission.router_object.user_api.show_me);
+        },
+        (req, res, next) => {
+            if ( auth.access.this_page_access == true ) {
+                mongo_data_base.CRUD.showAllDoc('user', database_respond, next);
+            } else {
+                res.json({
+                    message: 'you dont have permission for this page',
+                });
+            }
+        }, (req, res, next) => {
+            database_respond = _.flatten(database_respond);
+            next();
+        }, (req, res) => {
+            res.json(database_respond[0]);
+            console.log(chalk.bgRed(' api ') + " " + chalk.bgYellow.black(' user ') + ' show me');
+        });
+
+
+/**
+ * 
+ * 
+ * 
+ * @description : search user by id
+ * @param {string} id
+ * @argument {object} req
+ * @argument {object} res
+ * 
+ */ 
+router.get('/id/:id', (req, res, next) => {});
+
+
+
+/**
+ * 
+ * 04
+ * 
+ * @description : search by query
+ * @param {string} query
+ * @param {object} queryObject
+ * @argument {object} req
+ * @argument {object} res
+ *
+ */
+router.get('/query/:queryParam', (req, res, next) => {});
+
+
+
+
+
+
+
+// ====| sample user finder |=========================================
+/**
+ * 
+ * @description : search by query
+ * @param {string} query
+ * @param {object} queryObject
+ * @argument {object} req
+ * @argument {object} res
+ *
+ */
+
+// === 01
+function mongo_find(collection_name) {
+    MongoClient.connect(database_url, function (err, db) {
+        if (err) throw err;
+        db.collection(collection_name).find({}).toArray(function (err, result) {
+            if (err) throw err;
+            database_respond.push(result);
+            db.close();
+        });
+    });
+}
+
+// === 02
+function edit_data(data) {
+
+    data = _.flatten(data);
+    data[0].first_name = "رضا";
+    delete data[0].last_name;
+
+}
+
+// === 03
+router
+    .get('/sample',
+    (req, res, next) => {
+
+        // recive data from db
+        mongo_find('user');
+        next();
+
+    }, (req, res, next) => {
+
+        // == 01 ================
+        // edit_data(data_test1,);
+
+        // == 02 ================
+        database_respond = _.flatten(database_respond);
+        database_respond[0].first_name = "رضا";
+        delete database_respond[0].last_name;
+        next();
+
+    }, (req, res) => {
+
+        // show data
+        res.json(database_respond);
+
+    });
+
+
+
+
+// ======================================================
+// ====|>   export center   <|===========================
+// ======================================================
+module.exports = router;
