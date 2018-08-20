@@ -26,7 +26,12 @@ ___
 A familar project architucture is MVC that is popular in web application.
 ___
 
-#### 5) runable in windows server with no dependency
+#### 5) NO_SQL database
+for add some new feature like social network dependency or minimum waiting for data request, MONGODB is best solution that use in this program
+![PM2](https://www.computing.co.uk/w-images/48b9028d-b96b-4a15-aa1a-efc9a9c95b6e/2/MongoDBGrayLogoFullColorRGBs2-580x358.jpg)
+___
+
+#### 6) runable in windows server with no dependency
 in some case system admin need zero configuration for run application. with this package you can only run application as executable file with any software installation.
 
 ____
